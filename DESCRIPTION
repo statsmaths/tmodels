@@ -1,0 +1,13 @@
+Package: tmodels
+Type: Package
+Title: Apply Statistical Tests with Consistent Formula Interface
+Version: 1.0
+Date: 2018-12-30
+Author: Taylor Arnold
+Maintainer: Taylor Arnold <tarnold2@richmond.edu>
+Description: This package provides a set of unified functions for applying
+  standard statistical tests to datasets. Primarily useful as a teaching tool
+  at the moment.
+Imports: stats
+License: GPL-2
+RoxygenNote: 6.0.1
