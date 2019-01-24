@@ -7,7 +7,9 @@ library(tmodels)
 
 df <- data.frame(x = sample(c("H", "T"), 100, replace=TRUE),
                  y = sample(c("A", "B"), 100, replace=TRUE))
+df$y[df$x == "H"] <- sample(c("A", "A", "A", "B"), sum(df$x == "H"), replace=TRUE)
 
+tmod_z_test_prop(y ~ x, data = df)
 tmod_odds_ratio(y ~ x, data = df)
 tmod_fisher_test(y ~ x, data = df)
 tmod_chi_squared_test(y ~ x, data = df)
