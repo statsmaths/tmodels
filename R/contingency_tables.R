@@ -56,15 +56,15 @@ tmod_z_test_prop <- function(formula, data, effect = NULL, treatment = NULL)
   pest <- phat1 - phat2
   se <- sqrt((phat1 * (1 - phat1)) / n1 + (phat2 * (1 - phat2)) / n2)
   Z <- pest / se
-  alpha <- qnorm((1 - 0.05 / 2))
+  alpha <- stats::qnorm((1 - 0.05 / 2))
   cinf <- pest + c(-alpha, alpha) * se
-  pval <- 2 * (1 - pnorm(abs(Z)))
+  pval <- 2 * (1 - stats::pnorm(abs(Z)))
 
   out <- list(name = "Z-Test for Equality of Proportions (2 groups)",
               statistic_name = "Z",
               statistic_value = Z,
               null = "true probability of effect is the same between groups",
-              alternative = "true probability of effect is difference between groups",
+              alternative = "true probability of effect is different between groups",
               pvalue = pval,
               parameter_name = sprintf("Pr(%s|%s) - Pr(%s|%s)",
                                        ylevels[2], glevels[1],
