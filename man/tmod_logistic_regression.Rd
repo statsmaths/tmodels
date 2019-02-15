@@ -4,12 +4,14 @@
 \alias{tmod_logistic_regression}
 \title{Apply a logistic regression model}
 \usage{
-tmod_logistic_regression(formula, data)
+tmod_logistic_regression(formula, data, effect = NULL)
 }
 \arguments{
 \item{formula}{an object of class "formula"}
 
 \item{data}{a data frame object}
+
+\item{effect}{optional name of the 'effect' category in y}
 }
 \value{
 An itest object.

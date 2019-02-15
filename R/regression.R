@@ -92,11 +92,12 @@ tmod_linear_regression <- function(formula, data)
 #'
 #' @param formula   an object of class "formula"
 #' @param data      a data frame object
+#' @param effect    optional name of the 'effect' category in y
 #'
 #' @return An itest object.
 #'
 #' @export
-tmod_logistic_regression <- function(formula, data)
+tmod_logistic_regression <- function(formula, data, effect=NULL)
 {
 
   # construct objects to produce regression model
@@ -198,4 +199,22 @@ tmod_logistic_regression <- function(formula, data)
   return(z)
 }
 
+#' Get a linear regression model table
+#'
+#' @param formula   an object of class "formula"
+#' @param data      a data frame object
+#'
+#' @return An itest object.
+#'
+#' @export
+tmod_lin_reg_table <- function(formula, data)
+{
+  object <- stats::lm(formula, data)
+  ci_vals <- stats::confint(object, level = 0.95)
+  co <- stats::coef(summary(object))
+
+  co <- cbind(co[,1], ci_vals, co[,4])
+  colnames(co) <- c("Estimate", "CI Low", "CI High", "Pr(>|t|)")
+  signif(co, 3)
+}
 
