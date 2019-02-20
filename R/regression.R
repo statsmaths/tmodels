@@ -125,8 +125,8 @@ tmod_logistic_regression <- function(formula, data, effect=NULL)
                             " unique values. This test requires exactly 2.")
 
   # build regression and anova models
-  model1 <- .tmod_glm_fit(X, y, mf)
-  model2 <- .tmod_glm_fit(X[,id != 1,drop=FALSE], y, mf)
+  model1 <- .tmod_glm_fit(X, y, mf, data)
+  model2 <- .tmod_glm_fit(X[,id != 1,drop=FALSE], y, mf, data)
   amod <- stats::anova(model2, model1, test = "Rao")
 
   # details of the independent variable
@@ -140,14 +140,14 @@ tmod_logistic_regression <- function(formula, data, effect=NULL)
   {
     out <- as.numeric(stats::coef(summary(model1))[2,])
     digits <- getOption("digits")
-    st <- "change in OR(%s=%s) for unit change in %s\n\t           controlling for -- %s"
+    st <- "change in LO(%s=%s) for unit change in %s\n\t           controlling for -- %s"
     out <- list(name = "Logistic regression; Z-Test",
                 statistic_name = "Z",
                 statistic_value = out[3],
                 null = "Change in conditional log odds is zero",
                 alternative = "Change in conditional log odds is non-zero",
                 pvalue = out[4],
-                parameter_name = sprintf(st, v_var, ylevels[1], iv_var, nu_vars),
+                parameter_name = sprintf(st, v_var, ylevels[2], iv_var, nu_vars),
                 pointest = out[1],
                 cint = c(out[1] - 1.96 *  out[2],  out[1] + 1.96 *  out[2])
                 )
@@ -155,21 +155,20 @@ tmod_logistic_regression <- function(formula, data, effect=NULL)
     out <- as.numeric(stats::coef(summary(model1))[2,])
     levels <- model1$xlevels[[iv_var]]
     digits <- getOption("digits")
-    st <- "OR(%s=%s|%s) - OR(%s=%s|%s)\n\t           after controlling for -- %s"
+    st <- "LO(%s=%s|%s) - LO(%s=%s|%s)\n\t           after controlling for -- %s"
     out <- list(name = "Logistic regression; Z-Test",
                 statistic_name = "Z",
                 statistic_value = out[3],
                 null = "Difference in conditional log odds is zero",
                 alternative = "Difference in conditional log odds is non-zero",
                 pvalue = out[4],
-                parameter_name = sprintf(st, v_var, ylevels[1], levels[2],
-                                         v_var, ylevels[1], levels[1], nu_vars),
+                parameter_name = sprintf(st, v_var, ylevels[2], levels[2],
+                                         v_var, ylevels[2], levels[1], nu_vars),
                 pointest = out[1],
                 cint = c(out[1] - 1.96 *  out[2],  out[1] + 1.96 *  out[2])
                 )
   } else {
     digits <- getOption("digits")
-    st <- "OR(%s=%s|%s) - OR(%s=%s|%s)\n\t           after controlling for -- %s"
     out <- list(name = "Logistic regression; F-Test",
                 statistic_name = "Rao",
                 statistic_value = as.numeric(amod$Rao[2]),
@@ -185,17 +184,24 @@ tmod_logistic_regression <- function(formula, data, effect=NULL)
 
 }
 
-.tmod_glm_fit <- function(X, y, mf)
+.tmod_glm_fit <- function(X, y, mf, data)
 {
   mt <- attr(mf, "terms")
-  z <- stats::lm.fit(X, y)
-  class(z) <- "lm"
+  z <- stats::glm.fit(X, y, family = stats::binomial())
+  class(z) <- c("glm", "lm")
+  z$method <- "glm.fit"
   z$na.action <- attr(mf, "na.action")
   z$offset <- NULL
   z$contrasts <- attr(X, "contrasts")
   z$xlevels <- stats::.getXlevels(mt, mf)
   z$call <- NULL
   z$terms <- mt
+  z$data <- data
+  z$model <- mf
+  z$offset <- NULL
+  z$control <- stats::glm.control()
+  z$contrasts <- attr(X, "contrasts")
+  z$xlevels <- stats::.getXlevels(mt, mf)
   return(z)
 }
 
